@@ -1,0 +1,184 @@
+rules:
+  # ============================================================
+  # SQL INJECTION (JavaScript/Node.js)
+  # ============================================================
+
+  - id: js-sql-injection-template-literal
+    patterns:
+      - pattern: |
+          $DB.query(`... ${$INPUT} ...`)
+      - pattern: |
+          $DB.query("..." + $INPUT + "...")
+    message: |
+      SQL Injection: Template literal atau string concatenation dalam SQL query.
+      Gunakan parameterized queries:
+      db.query('SELECT * FROM users WHERE id = ?', [userId])
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      owasp: "A03:2021 - Injection"
+      cwe: "CWE-89"
+
+  - id: js-sql-injection-format
+    pattern: |
+      $DB.query("SELECT ... WHERE ... = '" + $INPUT + "'")
+    message: |
+      SQL Injection: String concatenation langsung ke SQL query.
+      Gunakan prepared statements atau parameterized queries.
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      owasp: "A03:2021 - Injection"
+      cwe: "CWE-89"
+
+  # ============================================================
+  # XSS (Cross-Site Scripting)
+  # ============================================================
+
+  - id: js-xss-res-send-user-input
+    patterns:
+      - pattern: |
+          res.send("..." + $INPUT + "...")
+      - pattern: |
+          res.send(`...${$INPUT}...`)
+    message: |
+      XSS: Input pengguna dimasukkan langsung ke HTML response.
+      Encode output sebelum dikirim:
+      res.send(`<p>${escapeHtml(input)}</p>`)
+      Atau gunakan template engine dengan auto-escaping.
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      owasp: "A03:2021 - Injection"
+      cwe: "CWE-79"
+
+  - id: js-xss-innerhtml
+    patterns:
+      - pattern: $EL.innerHTML = $INPUT
+      - pattern: $EL.outerHTML = $INPUT
+      - pattern: document.write($INPUT)
+      - pattern: document.writeln($INPUT)
+    message: |
+      DOM XSS: innerHTML/outerHTML dengan input yang tidak di-sanitasi.
+      Gunakan textContent atau DOM APIs yang aman:
+      element.textContent = userInput;  // Aman
+      Atau sanitasi dengan DOMPurify: element.innerHTML = DOMPurify.sanitize(userInput);
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      owasp: "A03:2021 - Injection"
+      cwe: "CWE-79"
+
+  # ============================================================
+  # COMMAND INJECTION (JavaScript)
+  # ============================================================
+
+  - id: js-command-injection-exec
+    patterns:
+      - pattern: exec($CMD + $INPUT)
+      - pattern: exec(`...${$INPUT}...`)
+      - pattern: exec($CMD.concat($INPUT))
+    message: |
+      Command Injection: child_process.exec() dengan input tidak tervalidasi.
+      Gunakan execFile() dengan argument array:
+      execFile('ping', ['-c', '4', hostname])
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      owasp: "A03:2021 - Injection"
+      cwe: "CWE-78"
+
+  - id: js-dangerous-eval
+    patterns:
+      - pattern: eval($INPUT)
+      - pattern: new Function($INPUT)
+      - pattern: setTimeout($INPUT, ...)
+        metavariable-type:
+          metavariable: $INPUT
+          types: [string]
+    message: |
+      Code Injection: eval() atau new Function() dengan input yang tidak dipercaya.
+      Hindari eval() — refactor logika untuk tidak memerlukan dynamic code execution.
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      owasp: "A03:2021 - Injection"
+      cwe: "CWE-95"
+
+  # ============================================================
+  # HARDCODED SECRETS (JavaScript)
+  # ============================================================
+
+  - id: js-hardcoded-jwt-secret
+    patterns:
+      - pattern: jwt.sign($PAYLOAD, "...", ...)
+      - pattern: jwt.verify($TOKEN, "...", ...)
+    message: |
+      Hardcoded JWT Secret: Secret JWT tidak boleh di-hardcode.
+      Gunakan environment variable:
+      jwt.sign(payload, process.env.JWT_SECRET, { algorithm: 'HS256', expiresIn: '1h' })
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      owasp: "A07:2021 - Identification and Authentication Failures"
+      cwe: "CWE-798"
+
+  - id: js-hardcoded-api-key
+    pattern: |
+      const $KEY = "..."
+      metavariable-regex:
+        metavariable: $KEY
+        regex: (?i)(api_key|apikey|secret|password|token|credential)
+    message: |
+      Hardcoded Secret: Secret/credential di-hardcode dalam kode.
+      Gunakan environment variable atau secret manager.
+    languages: [javascript, typescript]
+    severity: WARNING
+    metadata:
+      owasp: "A02:2021 - Cryptographic Failures"
+      cwe: "CWE-798"
+
+  # ============================================================
+  # INSECURE RANDOM
+  # ============================================================
+
+  - id: js-insecure-random
+    pattern: Math.random()
+    message: |
+      Insecure Randomness: Math.random() tidak kriptografis aman.
+      Untuk token keamanan, gunakan:
+      crypto.randomBytes(32).toString('hex')
+      Referensi: CWE-338
+    languages: [javascript, typescript]
+    severity: WARNING
+    metadata:
+      owasp: "A02:2021 - Cryptographic Failures"
+      cwe: "CWE-338"
+
+  # ============================================================
+  # JWT MISUSE
+  # ============================================================
+
+  - id: js-jwt-no-algorithm
+    pattern: jwt.verify($TOKEN, $SECRET)
+    message: |
+      JWT Vulnerability: jwt.verify() tanpa opsi algoritma rentan terhadap "alg:none" attack.
+      Selalu tentukan algoritma yang diizinkan:
+      jwt.verify(token, secret, { algorithms: ['HS256'] })
+    languages: [javascript, typescript]
+    severity: HIGH
+    metadata:
+      owasp: "A07:2021 - Identification and Authentication Failures"
+      cwe: "CWE-347"
+
+  - id: js-jwt-no-expiry
+    pattern: jwt.sign($PAYLOAD, $SECRET)
+    message: |
+      JWT tanpa expiry: Token tanpa expiresIn berlaku selamanya.
+      Tambahkan expiry:
+      jwt.sign(payload, secret, { expiresIn: '1h', algorithm: 'HS256' })
+    languages: [javascript, typescript]
+    severity: MEDIUM
+    metadata:
+      owasp: "A07:2021 - Identification and Authentication Failures"
+      cwe: "CWE-613"
