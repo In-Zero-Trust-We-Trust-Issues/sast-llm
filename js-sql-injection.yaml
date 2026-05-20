@@ -1,0 +1,9 @@
+rules:
+  - id: js-sql-injection
+    pattern: |
+      db.query($QUERY + $INPUT)
+    message: "SQL Injection: jangan gabungkan input user ke query!"
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      cwe: "CWE-89"

@@ -12,7 +12,7 @@ from pathlib import Path
 from dataclasses import dataclass, asdict
 from typing import Optional
 from openai import OpenAI
-
+from prompts import SYSTEM_PROMPT
 
 @dataclass
 class Vulnerability:
@@ -42,38 +42,6 @@ class AnalysisResult:
     tokens_used: int
 
 
-SYSTEM_PROMPT = """Kamu adalah security expert yang menganalisis kode untuk menemukan kerentanan keamanan (vulnerabilities).
-
-Tugasmu adalah menganalisis kode yang diberikan dan mengidentifikasi semua kerentanan keamanan yang ada.
-
-Untuk setiap kerentanan yang ditemukan, berikan informasi berikut dalam format JSON:
-- line_start: baris awal kode yang rentan (integer)
-- line_end: baris akhir kode yang rentan (integer)
-- severity: tingkat keparahan (CRITICAL/HIGH/MEDIUM/LOW/INFO)
-- category: kategori OWASP (contoh: "SQL Injection", "XSS", "Command Injection", dll)
-- cwe_id: CWE identifier (contoh: "CWE-89", "CWE-79", "CWE-78")
-- title: judul singkat vulnerability
-- description: penjelasan mengapa kode ini rentan (dalam Bahasa Indonesia)
-- vulnerable_code: potongan kode yang rentan
-- remediation: cara memperbaiki vulnerability (dalam Bahasa Indonesia)
-- confidence: tingkat keyakinan temuan (HIGH/MEDIUM/LOW)
-
-Fokus pada kerentanan nyata berdasarkan OWASP Top 10:
-1. Broken Access Control
-2. Cryptographic Failures
-3. Injection (SQL, Command, LDAP, dll)
-4. Insecure Design
-5. Security Misconfiguration
-6. Vulnerable Components
-7. Authentication Failures
-8. Software Integrity Failures
-9. Logging Failures
-10. SSRF
-
-Kembalikan HANYA JSON array dari vulnerability yang ditemukan.
-Jika tidak ada vulnerability, kembalikan array kosong: []
-"""
-
 
 def detect_language(filepath: str) -> str:
     """Deteksi bahasa pemrograman dari ekstensi file"""
@@ -81,6 +49,7 @@ def detect_language(filepath: str) -> str:
         '.py': 'Python',
         '.js': 'JavaScript',
         '.ts': 'TypeScript',
+        '.tsx': 'TypeScript (React)',
         '.java': 'Java',
         '.go': 'Go',
         '.rb': 'Ruby',
@@ -315,7 +284,7 @@ Contoh penggunaan:
     parser.add_argument(
         '--model',
         default='gpt-4o',
-        choices=['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+        choices=['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo', 'gpt-4.1', 'gpt-4.1-mini'],
         help='Model OpenAI yang digunakan (default: gpt-4o)'
     )
     parser.add_argument(

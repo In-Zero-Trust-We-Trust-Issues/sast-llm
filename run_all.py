@@ -23,7 +23,7 @@ def run_command(cmd: list, description: str) -> tuple[int, str]:
         cmd,
         capture_output=False,
         text=True,
-        cwd=Path(__file__).parent.parent
+        cwd=Path(__file__).parent
     )
     
     return result.returncode, ""
@@ -146,6 +146,7 @@ Contoh:
                 '--dir', args.target,
                 '--model', args.model,
                 '--output', llm_output,
+                '--extensions', '.ts', '.tsx', '.js',
             ],
             "LLM SAST Analyzer"
         )
