@@ -1,0 +1,382 @@
+{
+  "tool": "LLM SAST Analyzer",
+  "scan_timestamp": "2026-05-20T14:00:42Z",
+  "total_files": 21,
+  "total_vulnerabilities": 14,
+  "results": [
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/App.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 45,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 3.41,
+      "model_used": "gpt-4o",
+      "tokens_used": 1160
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/main.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 10,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 0.58,
+      "model_used": "gpt-4o",
+      "tokens_used": 593
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/vite-env.d.ts",
+      "language": "TypeScript",
+      "total_lines": 1,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 0.65,
+      "model_used": "gpt-4o",
+      "tokens_used": 499
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+      "language": "TypeScript",
+      "total_lines": 136,
+      "vulnerabilities": [
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 54,
+          "line_end": 54,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Retrieval",
+          "description": "Fungsi getGuests tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memanggil fungsi ini memiliki izin untuk mengakses data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").select(\"*\")",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan bahwa hanya pengguna yang berwenang yang dapat memanggil fungsi ini.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 68,
+          "line_end": 78,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Addition",
+          "description": "Fungsi addGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memanggil fungsi ini memiliki izin untuk menambahkan data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").insert({ ... }).select().single()",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan bahwa hanya pengguna yang berwenang yang dapat memanggil fungsi ini.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 95,
+          "line_end": 104,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Update",
+          "description": "Fungsi updateGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memanggil fungsi ini memiliki izin untuk memperbarui data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").update({ ... }).eq(\"id\", id)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan bahwa hanya pengguna yang berwenang yang dapat memanggil fungsi ini.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 110,
+          "line_end": 111,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Deletion",
+          "description": "Fungsi deleteGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memanggil fungsi ini memiliki izin untuk menghapus data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").delete().eq(\"id\", id)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan bahwa hanya pengguna yang berwenang yang dapat memanggil fungsi ini.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 116,
+          "line_end": 124,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Search",
+          "description": "Fungsi searchGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memanggil fungsi ini memiliki izin untuk mencari data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").select(\"*\").or(`name.ilike.${kw},company.ilike.${kw},purpose.ilike.${kw}`)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan bahwa hanya pengguna yang berwenang yang dapat memanggil fungsi ini.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 26,
+          "line_end": 32,
+          "severity": "MEDIUM",
+          "category": "Insecure File Upload",
+          "cwe_id": "CWE-434",
+          "title": "Insecure File Upload without Validation",
+          "description": "Fungsi uploadPdf tidak melakukan validasi tipe atau ukuran file sebelum mengunggahnya ke penyimpanan, yang dapat menyebabkan penyimpanan file berbahaya.",
+          "vulnerable_code": "supabase.storage.from(BUCKET).upload(fileName, file)",
+          "remediation": "Tambahkan validasi untuk memastikan bahwa hanya file dengan tipe dan ukuran yang diizinkan yang dapat diunggah.",
+          "confidence": "MEDIUM"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 127,
+          "line_end": 135,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Signed URL Generation",
+          "description": "Fungsi getSignedUrl tidak melakukan pengecekan otorisasi untuk memastikan bahwa hanya admin yang dapat mengakses fungsi ini, meskipun komentar menyatakan bahwa hanya admin yang seharusnya bisa mengakses.",
+          "vulnerable_code": "supabase.storage.from(BUCKET).createSignedUrl(storagePath, 60)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan bahwa hanya admin yang dapat memanggil fungsi ini.",
+          "confidence": "HIGH"
+        }
+      ],
+      "scan_duration_seconds": 9.02,
+      "model_used": "gpt-4o",
+      "tokens_used": 3220
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/utils/auth.ts",
+      "language": "TypeScript",
+      "total_lines": 58,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.54,
+      "model_used": "gpt-4o",
+      "tokens_used": 1446
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/context/AuthContext.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 134,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 3.57,
+      "model_used": "gpt-4o",
+      "tokens_used": 2210
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/lib/supabase.ts",
+      "language": "TypeScript",
+      "total_lines": 6,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.5,
+      "model_used": "gpt-4o",
+      "tokens_used": 793
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/seacrh/searchfilter.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 81,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.36,
+      "model_used": "gpt-4o",
+      "tokens_used": 1621
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/card/guestcard.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 121,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.09,
+      "model_used": "gpt-4o",
+      "tokens_used": 2661
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/modal/usermodal.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 257,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.68,
+      "model_used": "gpt-4o",
+      "tokens_used": 4312
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/route/ProtectedRoute.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 36,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.22,
+      "model_used": "gpt-4o",
+      "tokens_used": 1126
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/theme/themeprovider.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 54,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.03,
+      "model_used": "gpt-4o",
+      "tokens_used": 1253
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/theme/use-theme.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 25,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.36,
+      "model_used": "gpt-4o",
+      "tokens_used": 878
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/navbar/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 83,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 3.19,
+      "model_used": "gpt-4o",
+      "tokens_used": 1975
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/pagination/pagination.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 96,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 4.02,
+      "model_used": "gpt-4o",
+      "tokens_used": 1957
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/editprofile/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 187,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.23,
+      "model_used": "gpt-4o",
+      "tokens_used": 3119
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/dashboard/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 176,
+      "vulnerabilities": [
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/pages/dashboard/index.tsx",
+          "line_start": 77,
+          "line_end": 81,
+          "severity": "HIGH",
+          "category": "Broken Access Control",
+          "cwe_id": "CWE-284",
+          "title": "Missing Authorization on Delete Operation",
+          "description": "Fungsi handleDeleteGuest tidak melakukan pengecekan otorisasi sebelum menghapus data tamu. Hal ini memungkinkan pengguna yang tidak berwenang untuk menghapus data tamu.",
+          "vulnerable_code": "const handleDeleteGuest = async (id: string) => {\n  if (window.confirm(\"Apakah Anda yakin ingin menghapus data tamu ini?\")) {\n    await deleteGuest(id)\n    await loadGuests()\n  }\n}",
+          "remediation": "Tambahkan pengecekan otorisasi di server untuk memastikan bahwa hanya pengguna yang berwenang yang dapat menghapus data tamu.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/pages/dashboard/index.tsx",
+          "line_start": 68,
+          "line_end": 70,
+          "severity": "HIGH",
+          "category": "Broken Access Control",
+          "cwe_id": "CWE-284",
+          "title": "Missing Authorization on Update and Add Operations",
+          "description": "Fungsi handleSaveGuest tidak melakukan pengecekan otorisasi sebelum menambah atau memperbarui data tamu. Hal ini memungkinkan pengguna yang tidak berwenang untuk menambah atau memperbarui data tamu.",
+          "vulnerable_code": "if (editingGuest) {\n  await updateGuest(editingGuest.id, guestData, newPdfFile)\n} else {\n  await addGuest(guestData, newPdfFile)\n}",
+          "remediation": "Tambahkan pengecekan otorisasi di server untuk memastikan bahwa hanya pengguna yang berwenang yang dapat menambah atau memperbarui data tamu.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/pages/dashboard/index.tsx",
+          "line_start": 14,
+          "line_end": 14,
+          "severity": "MEDIUM",
+          "category": "Sensitive Data Exposure",
+          "cwe_id": "CWE-200",
+          "title": "Sensitive Data Exposure in Profile Display",
+          "description": "Alamat email pengguna ditampilkan secara langsung di antarmuka pengguna. Ini dapat menyebabkan kebocoran informasi sensitif jika halaman ini diakses oleh pihak yang tidak berwenang.",
+          "vulnerable_code": "const { profile } = useAuth()",
+          "remediation": "Pastikan bahwa hanya pengguna yang berwenang yang dapat melihat informasi sensitif seperti alamat email.",
+          "confidence": "MEDIUM"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/pages/dashboard/index.tsx",
+          "line_start": 65,
+          "line_end": 65,
+          "severity": "MEDIUM",
+          "category": "Insecure File Upload",
+          "cwe_id": "CWE-434",
+          "title": "Insecure File Upload Handling",
+          "description": "Fungsi handleSaveGuest menerima file PDF baru tanpa melakukan validasi tipe atau ukuran file. Ini dapat menyebabkan upload file berbahaya.",
+          "vulnerable_code": "newPdfFile?: File | null",
+          "remediation": "Tambahkan validasi tipe dan ukuran file sebelum mengunggah file ke server.",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "scan_duration_seconds": 5.4,
+      "model_used": "gpt-4o",
+      "tokens_used": 3504
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/login/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 103,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 1.65,
+      "model_used": "gpt-4o",
+      "tokens_used": 2034
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 493,
+      "vulnerabilities": [
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/index.tsx",
+          "line_start": 148,
+          "line_end": 152,
+          "severity": "HIGH",
+          "category": "Insecure File Upload",
+          "cwe_id": "CWE-434",
+          "title": "Insecure File Upload",
+          "description": "File yang diunggah disimpan di storage tanpa validasi tambahan di server. Ini bisa menyebabkan file berbahaya diunggah jika validasi di client-side dilewati.",
+          "vulnerable_code": "const { data: uploadData, error: uploadError } = await supabase.storage.from(\"ktp-letters\").upload(fileName, formData.ktp_url);",
+          "remediation": "Tambahkan validasi file di sisi server untuk memastikan hanya file yang diizinkan yang dapat diunggah.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/index.tsx",
+          "line_start": 155,
+          "line_end": 161,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Data Insertion",
+          "description": "Data tamu dimasukkan ke dalam database tanpa adanya pengecekan otorisasi. Ini memungkinkan siapa saja untuk menambahkan data tanpa batasan.",
+          "vulnerable_code": "const { error: insertError } = await supabase.from(\"guests\").insert({ name: formData.name, company: formData.company, purpose: formData.purpose, arrival_time: formData.arrival_time, ktp_url, });",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan hanya pengguna yang berwenang yang dapat menambahkan data.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/index.tsx",
+          "line_start": 166,
+          "line_end": 166,
+          "severity": "MEDIUM",
+          "category": "Information Leakage",
+          "cwe_id": "CWE-209",
+          "title": "Error Message Exposure",
+          "description": "Pesan error dari server ditampilkan langsung kepada pengguna, yang dapat memberikan informasi sensitif tentang sistem.",
+          "vulnerable_code": "setSubmitError(err.message || \"Gagal menyimpan data. Silakan coba lagi.\");",
+          "remediation": "Tampilkan pesan error yang lebih umum dan log detail error di server untuk analisis lebih lanjut.",
+          "confidence": "MEDIUM"
+        }
+      ],
+      "scan_duration_seconds": 5.66,
+      "model_used": "gpt-4o",
+      "tokens_used": 8331
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/_components/form/schema.ts",
+      "language": "TypeScript",
+      "total_lines": 24,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.49,
+      "model_used": "gpt-4o",
+      "tokens_used": 1030
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/_components/form/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 0,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 0.52,
+      "model_used": "gpt-4o",
+      "tokens_used": 499
+    }
+  ]
+}

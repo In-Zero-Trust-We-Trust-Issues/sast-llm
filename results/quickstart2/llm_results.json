@@ -1,0 +1,197 @@
+{
+  "tool": "LLM SAST Analyzer",
+  "scan_timestamp": "2026-05-20T13:22:19Z",
+  "total_files": 21,
+  "total_vulnerabilities": 0,
+  "results": [
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/App.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 45,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.84,
+      "model_used": "gpt-4o",
+      "tokens_used": 1091
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/main.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 10,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.0,
+      "model_used": "gpt-4o",
+      "tokens_used": 682
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/vite-env.d.ts",
+      "language": "TypeScript",
+      "total_lines": 1,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 0.78,
+      "model_used": "gpt-4o",
+      "tokens_used": 432
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+      "language": "TypeScript",
+      "total_lines": 136,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.43,
+      "model_used": "gpt-4o",
+      "tokens_used": 2242
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/utils/auth.ts",
+      "language": "TypeScript",
+      "total_lines": 58,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.02,
+      "model_used": "gpt-4o",
+      "tokens_used": 1308
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/context/AuthContext.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 134,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 3.19,
+      "model_used": "gpt-4o",
+      "tokens_used": 2114
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/lib/supabase.ts",
+      "language": "TypeScript",
+      "total_lines": 6,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.8,
+      "model_used": "gpt-4o",
+      "tokens_used": 729
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/seacrh/searchfilter.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 81,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.96,
+      "model_used": "gpt-4o",
+      "tokens_used": 1592
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/card/guestcard.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 121,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.93,
+      "model_used": "gpt-4o",
+      "tokens_used": 2625
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/modal/usermodal.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 257,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.31,
+      "model_used": "gpt-4o",
+      "tokens_used": 4248
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/route/ProtectedRoute.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 36,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.91,
+      "model_used": "gpt-4o",
+      "tokens_used": 1078
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/theme/themeprovider.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 54,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.08,
+      "model_used": "gpt-4o",
+      "tokens_used": 1180
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/theme/use-theme.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 25,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 0.73,
+      "model_used": "gpt-4o",
+      "tokens_used": 675
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/navbar/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 83,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.46,
+      "model_used": "gpt-4o",
+      "tokens_used": 1910
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/components/pagination/pagination.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 96,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.03,
+      "model_used": "gpt-4o",
+      "tokens_used": 1816
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/editprofile/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 187,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.25,
+      "model_used": "gpt-4o",
+      "tokens_used": 3091
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/dashboard/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 176,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.02,
+      "model_used": "gpt-4o",
+      "tokens_used": 2933
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/login/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 103,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 1.97,
+      "model_used": "gpt-4o",
+      "tokens_used": 2003
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 493,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 2.36,
+      "model_used": "gpt-4o",
+      "tokens_used": 7985
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/_components/form/schema.ts",
+      "language": "TypeScript",
+      "total_lines": 24,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 0.75,
+      "model_used": "gpt-4o",
+      "tokens_used": 743
+    },
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/pages/(public)/homepage/_components/form/index.tsx",
+      "language": "TypeScript (React)",
+      "total_lines": 0,
+      "vulnerabilities": [],
+      "scan_duration_seconds": 0.71,
+      "model_used": "gpt-4o",
+      "tokens_used": 432
+    }
+  ]
+}

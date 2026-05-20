@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAST Comparison Report: LLM vs Semgrep</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f1a; color: #e0e0e0; line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        h1 { font-size: 2rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+        h2 { font-size: 1.3rem; color: #a78bfa; margin: 24px 0 12px; border-bottom: 1px solid #2d2d4e; padding-bottom: 8px; }
+        h3 { font-size: 1.1rem; color: #93c5fd; margin-bottom: 8px; }
+        
+        .subtitle { color: #6b7280; margin-bottom: 30px; }
+        
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 30px; }
+        .stat-card { background: #1e1e3a; border: 1px solid #2d2d4e; border-radius: 12px; padding: 20px; text-align: center; }
+        .stat-number { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+        .stat-label { font-size: 0.8rem; color: #6b7280; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-llm { color: #60a5fa; }
+        .stat-semgrep { color: #34d399; }
+        .stat-overlap { color: #fbbf24; }
+        .stat-total { color: #f87171; }
+        
+        /* Comparison Bar */
+        .comparison-section { background: #1e1e3a; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #2d2d4e; }
+        .bar-container { margin: 12px 0; }
+        .bar-label { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem; }
+        .bar { height: 24px; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 0.8rem; font-weight: 600; color: #fff; min-width: 30px; }
+        .bar-llm { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .bar-semgrep { background: linear-gradient(90deg, #059669, #34d399); }
+        .bar-overlap { background: linear-gradient(90deg, #d97706, #fbbf24); }
+        
+        /* Tables */
+        .findings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .findings-table th { background: #1a1a2e; color: #a78bfa; text-align: left; padding: 10px 12px; border-bottom: 2px solid #2d2d4e; }
+        .findings-table td { padding: 8px 12px; border-bottom: 1px solid #1a1a2e; vertical-align: top; }
+        .findings-table tr:hover td { background: #1e1e3a; }
+        
+        /* Severity badges */
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .badge-CRITICAL { background: #7c2d12; color: #fca5a5; }
+        .badge-HIGH { background: #7f1d1d; color: #fca5a5; }
+        .badge-ERROR { background: #7f1d1d; color: #fca5a5; }
+        .badge-MEDIUM { background: #78350f; color: #fde68a; }
+        .badge-WARNING { background: #78350f; color: #fde68a; }
+        .badge-LOW { background: #1e3a5f; color: #93c5fd; }
+        .badge-INFO { background: #1e3a5f; color: #93c5fd; }
+        
+        /* Tool badges */
+        .tool-llm { background: #1e3a8a; color: #93c5fd; }
+        .tool-semgrep { background: #064e3b; color: #6ee7b7; }
+        
+        /* Code snippets */
+        .code-snippet { background: #0d1117; border: 1px solid #2d2d4e; border-radius: 4px; padding: 6px 10px; font-family: monospace; font-size: 0.8rem; color: #e6db74; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+        .tab { padding: 8px 16px; border-radius: 6px 6px 0 0; cursor: pointer; font-size: 0.9rem; border: 1px solid #2d2d4e; background: #1a1a2e; color: #6b7280; }
+        .tab.active { background: #1e1e3a; color: #a78bfa; border-bottom-color: #1e1e3a; }
+        
+        .card { background: #1e1e3a; border: 1px solid #2d2d4e; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .overlap-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .finding-box { background: #0f0f1a; border-radius: 8px; padding: 12px; border-left: 3px solid; }
+        .finding-box-llm { border-left-color: #3b82f6; }
+        .finding-box-semgrep { border-left-color: #10b981; }
+        
+        .chart-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        
+        .severity-chart { display: flex; flex-direction: column; gap: 8px; }
+        .severity-row { display: flex; align-items: center; gap: 12px; }
+        .severity-name { width: 80px; font-size: 0.85rem; }
+        .severity-bars { display: flex; gap: 4px; flex: 1; align-items: center; }
+        .mini-bar { height: 16px; border-radius: 2px; min-width: 4px; }
+        .mini-bar-llm { background: #3b82f6; }
+        .mini-bar-semgrep { background: #10b981; }
+        .severity-counts { font-size: 0.8rem; color: #6b7280; }
+        
+        footer { text-align: center; color: #374151; margin-top: 40px; padding: 20px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>SAST Comparison Report</h1>
+    <p class="subtitle">LLM-based SAST vs Semgrep — Analisis Kerentanan Keamanan Kode</p>
+    
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number stat-llm">14</div>
+            <div class="stat-label">LLM Findings</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number stat-semgrep">1</div>
+            <div class="stat-label">Semgrep Findings</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number stat-overlap">0</div>
+            <div class="stat-label">Overlapping</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number stat-total">14</div>
+            <div class="stat-label">LLM Only</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number stat-total">1</div>
+            <div class="stat-label">Semgrep Only</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #c084fc;">0.0%</div>
+            <div class="stat-label">Agreement Rate</div>
+        </div>
+    </div>
+    
+    <!-- Coverage Comparison -->
+    <div class="comparison-section">
+        <h2>Coverage Comparison</h2>
+        <div class="bar-container">
+            <div class="bar-label"><span>LLM SAST</span><span>93.3% (14 findings)</span></div>
+            <div style="background: #1a1a2e; border-radius: 4px; height: 24px; overflow: hidden;">
+                <div class="bar bar-llm" style="width: 93.3%;">93.3%</div>
+            </div>
+        </div>
+        <div class="bar-container">
+            <div class="bar-label"><span>Semgrep</span><span>6.7% (1 findings)</span></div>
+            <div style="background: #1a1a2e; border-radius: 4px; height: 24px; overflow: hidden;">
+                <div class="bar bar-semgrep" style="width: 6.7%;">6.7%</div>
+            </div>
+        </div>
+        <div class="bar-container">
+            <div class="bar-label"><span>Overlapping</span><span>0.0% (0 findings)</span></div>
+            <div style="background: #1a1a2e; border-radius: 4px; height: 24px; overflow: hidden;">
+                <div class="bar bar-overlap" style="width: 0.0%;">0.0%</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- All Findings Table -->
+    <div class="comparison-section">
+        <h2>Semua Findings</h2>
+        <table class="findings-table">
+            <thead>
+                <tr>
+                    <th>Tool</th>
+                    <th>File</th>
+                    <th>Line</th>
+                    <th>Severity</th>
+                    <th>Category</th>
+                    <th>CWE</th>
+                    <th>Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>gueststorage.ts</td>
+            <td>26</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Insecure File Upload</td>
+            <td>CWE-434</td>
+            <td>Insecure File Upload without Validation</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>gueststorage.ts</td>
+            <td>54</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Retrieval</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>gueststorage.ts</td>
+            <td>68</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Addition</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>gueststorage.ts</td>
+            <td>95</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Update</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>gueststorage.ts</td>
+            <td>110</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Deletion</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>gueststorage.ts</td>
+            <td>116</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Search</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>gueststorage.ts</td>
+            <td>127</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Signed URL Generation</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>index.tsx</td>
+            <td>14</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Sensitive Data Exposure</td>
+            <td>CWE-200</td>
+            <td>Sensitive Data Exposure in Profile Display</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-semgrep">Semgrep</span></td>
+            <td>index.tsx</td>
+            <td>46</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Code Injection</td>
+            <td>CWE-95</td>
+            <td>Js Dangerous Eval</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>index.tsx</td>
+            <td>65</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Insecure File Upload</td>
+            <td>CWE-434</td>
+            <td>Insecure File Upload Handling</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>index.tsx</td>
+            <td>68</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Broken Access Control</td>
+            <td>CWE-284</td>
+            <td>Missing Authorization on Update and Add Operations</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>index.tsx</td>
+            <td>77</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Broken Access Control</td>
+            <td>CWE-284</td>
+            <td>Missing Authorization on Delete Operation</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>index.tsx</td>
+            <td>148</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Insecure File Upload</td>
+            <td>CWE-434</td>
+            <td>Insecure File Upload</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>index.tsx</td>
+            <td>155</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Data Insertion</td>
+        </tr>
+<tr>
+            <td><span class="badge tool-llm">LLM</span></td>
+            <td>index.tsx</td>
+            <td>166</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Information Leakage</td>
+            <td>CWE-209</td>
+            <td>Error Message Exposure</td>
+        </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Overlapping Findings -->
+    <div class="comparison-section">
+        <h2>Overlapping Findings (0 temuan yang sama)</h2>
+        <p style="color: #6b7280;">Tidak ada overlapping findings.</p>
+    </div>
+    
+    <!-- LLM Only -->
+    <div class="comparison-section">
+        <h2>LLM-Only Findings (14 temuan unik LLM)</h2>
+        <p style="color: #6b7280; margin-bottom: 12px; font-size: 0.9rem;">
+            Vulnerability yang ditemukan LLM tapi TIDAK ditemukan Semgrep. 
+            Bisa berupa false positives atau temuan kontekstual yang memerlukan pemahaman semantik.
+        </p>
+        <table class="findings-table">
+        <thead>
+            <tr><th>File</th><th>Line</th><th>Severity</th><th>Category</th><th>CWE</th><th>Title</th><th>Description</th></tr>
+        </thead>
+        <tbody><tr>
+            <td>gueststorage.ts</td>
+            <td>54</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Retrieval</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi getGuests tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memanggil...</td>
+        </tr><tr>
+            <td>gueststorage.ts</td>
+            <td>68</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Addition</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi addGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memanggil ...</td>
+        </tr><tr>
+            <td>gueststorage.ts</td>
+            <td>95</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Update</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi updateGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memangg...</td>
+        </tr><tr>
+            <td>gueststorage.ts</td>
+            <td>110</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Deletion</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi deleteGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memangg...</td>
+        </tr><tr>
+            <td>gueststorage.ts</td>
+            <td>116</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Guest Search</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi searchGuest tidak melakukan pengecekan otorisasi untuk memastikan bahwa pengguna yang memangg...</td>
+        </tr><tr>
+            <td>gueststorage.ts</td>
+            <td>26</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Insecure File Upload</td>
+            <td>CWE-434</td>
+            <td>Insecure File Upload without Validation</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi uploadPdf tidak melakukan validasi tipe atau ukuran file sebelum mengunggahnya ke penyimpanan...</td>
+        </tr><tr>
+            <td>gueststorage.ts</td>
+            <td>127</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Signed URL Generation</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi getSignedUrl tidak melakukan pengecekan otorisasi untuk memastikan bahwa hanya admin yang dap...</td>
+        </tr><tr>
+            <td>index.tsx</td>
+            <td>77</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Broken Access Control</td>
+            <td>CWE-284</td>
+            <td>Missing Authorization on Delete Operation</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi handleDeleteGuest tidak melakukan pengecekan otorisasi sebelum menghapus data tamu. Hal ini m...</td>
+        </tr><tr>
+            <td>index.tsx</td>
+            <td>68</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Broken Access Control</td>
+            <td>CWE-284</td>
+            <td>Missing Authorization on Update and Add Operations</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi handleSaveGuest tidak melakukan pengecekan otorisasi sebelum menambah atau memperbarui data t...</td>
+        </tr><tr>
+            <td>index.tsx</td>
+            <td>14</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Sensitive Data Exposure</td>
+            <td>CWE-200</td>
+            <td>Sensitive Data Exposure in Profile Display</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Alamat email pengguna ditampilkan secara langsung di antarmuka pengguna. Ini dapat menyebabkan keboc...</td>
+        </tr><tr>
+            <td>index.tsx</td>
+            <td>65</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Insecure File Upload</td>
+            <td>CWE-434</td>
+            <td>Insecure File Upload Handling</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Fungsi handleSaveGuest menerima file PDF baru tanpa melakukan validasi tipe atau ukuran file. Ini da...</td>
+        </tr><tr>
+            <td>index.tsx</td>
+            <td>148</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Insecure File Upload</td>
+            <td>CWE-434</td>
+            <td>Insecure File Upload</td>
+            <td style="font-size:0.8rem;color:#9ca3af">File yang diunggah disimpan di storage tanpa validasi tambahan di server. Ini bisa menyebabkan file ...</td>
+        </tr><tr>
+            <td>index.tsx</td>
+            <td>155</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Missing Authorization</td>
+            <td>CWE-862</td>
+            <td>Missing Authorization on Data Insertion</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Data tamu dimasukkan ke dalam database tanpa adanya pengecekan otorisasi. Ini memungkinkan siapa saj...</td>
+        </tr><tr>
+            <td>index.tsx</td>
+            <td>166</td>
+            <td><span class="badge badge-MEDIUM">MEDIUM</span></td>
+            <td>Information Leakage</td>
+            <td>CWE-209</td>
+            <td>Error Message Exposure</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Pesan error dari server ditampilkan langsung kepada pengguna, yang dapat memberikan informasi sensit...</td>
+        </tr></tbody>
+    </table>
+    </div>
+    
+    <!-- Semgrep Only -->
+    <div class="comparison-section">
+        <h2>Semgrep-Only Findings (1 temuan unik Semgrep)</h2>
+        <p style="color: #6b7280; margin-bottom: 12px; font-size: 0.9rem;">
+            Vulnerability yang ditemukan Semgrep tapi TIDAK ditemukan LLM.
+            Biasanya merupakan pattern matching yang tepat sasaran.
+        </p>
+        <table class="findings-table">
+        <thead>
+            <tr><th>File</th><th>Line</th><th>Severity</th><th>Category</th><th>CWE</th><th>Title</th><th>Description</th></tr>
+        </thead>
+        <tbody><tr>
+            <td>index.tsx</td>
+            <td>46</td>
+            <td><span class="badge badge-HIGH">HIGH</span></td>
+            <td>Code Injection</td>
+            <td>CWE-95</td>
+            <td>Js Dangerous Eval</td>
+            <td style="font-size:0.8rem;color:#9ca3af">Code Injection: eval() atau new Function() dengan input yang tidak dipercaya.
+Hindari eval() — refac...</td>
+        </tr></tbody>
+    </table>
+    </div>
+
+    <!-- Analysis Summary -->
+    <div class="comparison-section">
+        <h2>Analisis & Kesimpulan</h2>
+        <ul style="list-style: disc; padding-left: 24px; color: #d1d5db; line-height: 2;">
+        <li>LLM memiliki <strong>coverage lebih luas</strong> (93.3% vs 6.7%), karena kemampuannya memahami konteks semantik kode.</li><li><strong>Tingkat kesepakatan rendah</strong> (0.0%), kedua tool menemukan jenis vulnerability yang berbeda.</li><li><strong>LLM</strong> unggul dalam: memahami konteks bisnis, menjelaskan dampak, memberikan remediation yang kontekstual, dan menemukan logic flaws.</li><li><strong>Semgrep</strong> unggul dalam: kecepatan scan, konsistensi, tidak ada false positives dari hallucination, reproducibility, dan integrasi CI/CD.</li><li><strong>Rekomendasi</strong>: Gunakan Semgrep untuk CI/CD pipeline (cepat, deterministik), dan LLM untuk deep review saat code review atau audit keamanan.</li>
+    </ul>
+    </div>
+    
+</div>
+<footer>
+    Generated by SAST Comparison Tool | LLM SAST vs Semgrep
+</footer>
+</body>
+</html>

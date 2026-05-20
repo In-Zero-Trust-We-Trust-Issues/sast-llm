@@ -1,0 +1,109 @@
+{
+  "tool": "LLM SAST Analyzer",
+  "scan_timestamp": "2026-05-20T13:58:38Z",
+  "total_files": 1,
+  "total_vulnerabilities": 7,
+  "results": [
+    {
+      "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+      "language": "TypeScript",
+      "total_lines": 136,
+      "vulnerabilities": [
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 54,
+          "line_end": 54,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Retrieval",
+          "description": "Fungsi `getGuests` mengambil semua data tamu dari tabel 'guests' tanpa melakukan pengecekan otorisasi. Hal ini memungkinkan pengguna yang tidak berwenang untuk mengakses data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").select(\"*\")",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan hanya pengguna yang berwenang yang dapat mengakses data tamu.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 68,
+          "line_end": 78,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Addition",
+          "description": "Fungsi `addGuest` menambahkan data tamu baru ke tabel 'guests' tanpa melakukan pengecekan otorisasi. Hal ini memungkinkan pengguna yang tidak berwenang untuk menambahkan data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").insert({ ... }).select().single()",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan hanya pengguna yang berwenang yang dapat menambahkan data tamu.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 95,
+          "line_end": 104,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Update",
+          "description": "Fungsi `updateGuest` memperbarui data tamu di tabel 'guests' tanpa melakukan pengecekan otorisasi. Hal ini memungkinkan pengguna yang tidak berwenang untuk memperbarui data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").update({ ... }).eq(\"id\", id)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan hanya pengguna yang berwenang yang dapat memperbarui data tamu.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 110,
+          "line_end": 111,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Deletion",
+          "description": "Fungsi `deleteGuest` menghapus data tamu dari tabel 'guests' tanpa melakukan pengecekan otorisasi. Hal ini memungkinkan pengguna yang tidak berwenang untuk menghapus data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").delete().eq(\"id\", id)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan hanya pengguna yang berwenang yang dapat menghapus data tamu.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 116,
+          "line_end": 124,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Guest Search",
+          "description": "Fungsi `searchGuest` mencari data tamu di tabel 'guests' tanpa melakukan pengecekan otorisasi. Hal ini memungkinkan pengguna yang tidak berwenang untuk mencari data tamu.",
+          "vulnerable_code": "supabase.from(\"guests\").select(\"*\").or(`name.ilike.${kw},company.ilike.${kw},purpose.ilike.${kw}`)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan hanya pengguna yang berwenang yang dapat mencari data tamu.",
+          "confidence": "HIGH"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 26,
+          "line_end": 32,
+          "severity": "MEDIUM",
+          "category": "Insecure File Upload",
+          "cwe_id": "CWE-434",
+          "title": "Insecure File Upload",
+          "description": "Fungsi `uploadPdf` mengunggah file ke penyimpanan tanpa melakukan validasi tipe atau ukuran file. Hal ini dapat memungkinkan pengguna mengunggah file berbahaya.",
+          "vulnerable_code": "supabase.storage.from(BUCKET).upload(fileName, file)",
+          "remediation": "Tambahkan validasi tipe dan ukuran file sebelum mengunggah untuk memastikan hanya file yang diizinkan yang dapat diunggah.",
+          "confidence": "MEDIUM"
+        },
+        {
+          "file": "/home/kelompok2/CI-CD/app/src/utils/gueststorage.ts",
+          "line_start": 127,
+          "line_end": 135,
+          "severity": "HIGH",
+          "category": "Missing Authorization",
+          "cwe_id": "CWE-862",
+          "title": "Missing Authorization on Signed URL Generation",
+          "description": "Fungsi `getSignedUrl` menghasilkan URL yang ditandatangani untuk file di penyimpanan tanpa melakukan pengecekan otorisasi. Hal ini memungkinkan pengguna yang tidak berwenang untuk mengakses file yang seharusnya dibatasi.",
+          "vulnerable_code": "supabase.storage.from(BUCKET).createSignedUrl(storagePath, 60)",
+          "remediation": "Tambahkan mekanisme otorisasi untuk memastikan hanya pengguna yang berwenang yang dapat menghasilkan URL yang ditandatangani.",
+          "confidence": "HIGH"
+        }
+      ],
+      "scan_duration_seconds": 9.35,
+      "model_used": "gpt-4o",
+      "tokens_used": 3287
+    }
+  ]
+}

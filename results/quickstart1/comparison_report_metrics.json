@@ -1,0 +1,23 @@
+{
+  "metrics": {
+    "llm_total_findings": 0,
+    "semgrep_total_findings": 1,
+    "overlapping_findings": 0,
+    "llm_unique_findings": 0,
+    "semgrep_unique_findings": 1,
+    "total_unique_findings": 1,
+    "agreement_rate": 0.0,
+    "llm_coverage": 0.0,
+    "semgrep_coverage": 100.0
+  },
+  "llm_only_findings": [],
+  "semgrep_only_findings": [
+    {
+      "file": "index.tsx",
+      "line": 46,
+      "severity": "HIGH",
+      "category": "Code Injection",
+      "title": "Js Dangerous Eval"
+    }
+  ]
+}

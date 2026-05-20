@@ -1,0 +1,122 @@
+{
+  "metrics": {
+    "llm_total_findings": 14,
+    "semgrep_total_findings": 1,
+    "overlapping_findings": 0,
+    "llm_unique_findings": 14,
+    "semgrep_unique_findings": 1,
+    "total_unique_findings": 15,
+    "agreement_rate": 0.0,
+    "llm_coverage": 93.3,
+    "semgrep_coverage": 6.7
+  },
+  "llm_only_findings": [
+    {
+      "file": "gueststorage.ts",
+      "line": 54,
+      "severity": "HIGH",
+      "category": "Missing Authorization",
+      "title": "Missing Authorization on Guest Retrieval"
+    },
+    {
+      "file": "gueststorage.ts",
+      "line": 68,
+      "severity": "HIGH",
+      "category": "Missing Authorization",
+      "title": "Missing Authorization on Guest Addition"
+    },
+    {
+      "file": "gueststorage.ts",
+      "line": 95,
+      "severity": "HIGH",
+      "category": "Missing Authorization",
+      "title": "Missing Authorization on Guest Update"
+    },
+    {
+      "file": "gueststorage.ts",
+      "line": 110,
+      "severity": "HIGH",
+      "category": "Missing Authorization",
+      "title": "Missing Authorization on Guest Deletion"
+    },
+    {
+      "file": "gueststorage.ts",
+      "line": 116,
+      "severity": "HIGH",
+      "category": "Missing Authorization",
+      "title": "Missing Authorization on Guest Search"
+    },
+    {
+      "file": "gueststorage.ts",
+      "line": 26,
+      "severity": "MEDIUM",
+      "category": "Insecure File Upload",
+      "title": "Insecure File Upload without Validation"
+    },
+    {
+      "file": "gueststorage.ts",
+      "line": 127,
+      "severity": "HIGH",
+      "category": "Missing Authorization",
+      "title": "Missing Authorization on Signed URL Generation"
+    },
+    {
+      "file": "index.tsx",
+      "line": 77,
+      "severity": "HIGH",
+      "category": "Broken Access Control",
+      "title": "Missing Authorization on Delete Operation"
+    },
+    {
+      "file": "index.tsx",
+      "line": 68,
+      "severity": "HIGH",
+      "category": "Broken Access Control",
+      "title": "Missing Authorization on Update and Add Operations"
+    },
+    {
+      "file": "index.tsx",
+      "line": 14,
+      "severity": "MEDIUM",
+      "category": "Sensitive Data Exposure",
+      "title": "Sensitive Data Exposure in Profile Display"
+    },
+    {
+      "file": "index.tsx",
+      "line": 65,
+      "severity": "MEDIUM",
+      "category": "Insecure File Upload",
+      "title": "Insecure File Upload Handling"
+    },
+    {
+      "file": "index.tsx",
+      "line": 148,
+      "severity": "HIGH",
+      "category": "Insecure File Upload",
+      "title": "Insecure File Upload"
+    },
+    {
+      "file": "index.tsx",
+      "line": 155,
+      "severity": "HIGH",
+      "category": "Missing Authorization",
+      "title": "Missing Authorization on Data Insertion"
+    },
+    {
+      "file": "index.tsx",
+      "line": 166,
+      "severity": "MEDIUM",
+      "category": "Information Leakage",
+      "title": "Error Message Exposure"
+    }
+  ],
+  "semgrep_only_findings": [
+    {
+      "file": "index.tsx",
+      "line": 46,
+      "severity": "HIGH",
+      "category": "Code Injection",
+      "title": "Js Dangerous Eval"
+    }
+  ]
+}
